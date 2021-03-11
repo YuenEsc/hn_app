@@ -1,6 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hn_app/json_parsing.dart';
-
+import 'package:http/http.dart' as http;
 void main() {
   test("parses topstories.json", () {
     const jsonString =
@@ -14,4 +16,19 @@ void main() {
         """{"by":"tinyprojects","descendants":290,"id":26422799,"kids":[26423603,26423478,26423024,26423164,26424647,26423088,26423421,26422990,26425448,26423068,26425279,26423436,26423817,26423056,26423060,26425089,26423055,26423036,26424961,26424898,26425262,26423455,26423016,26423905,26424230,26423265,26425272,26423026,26424389,26423257,26425416,26424563,26423572,26423362,26424953,26423736,26424542,26424151,26423660,26423641,26423733,26423241,26423671,26423714,26422965,26424568,26423836,26423025,26423062,26423015,26423135,26423159,26423464,26423510,26423032,26423526,26423069],"score":677,"time":1615461428,"title":"I bought 300 emoji domain names from Kazakhstan and built an email service","type":"story","url":"https://tinyprojects.dev/projects/mailoji"}""";
     expect(parseArticle(jsonString).by, "tinyprojects");
   });
+
+  test("parses item.json over a network", () async {
+    final url = Uri.https('hacker-news.firebaseio.com','/v0/beststories.json');
+    final response = await http.get(url);
+    if(response.statusCode == 200){
+      final idListJson = jsonDecode(response.body);
+      if(idListJson.isNotEmpty){
+        final storyUrl = Uri.https('hacker-news.firebaseio.com','/v0/${idListJson.first}.json');
+        final storyRes = await http.get(storyUrl);
+            if(response.statusCode == 200){
+              expect(parseArticle(storyRes.body).by, "tinyprojects");
+            }
+      }
+    }
+  },);
 }

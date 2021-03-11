@@ -1,15 +1,50 @@
-import 'package:built_value/built_value.dart';
+// import 'dart:convert';
 
-part 'json_parsing.g.dart';
+// import 'package:built_collection/built_collection.dart';
+// import 'package:built_value/built_value.dart';
+// import 'package:built_value/serializer.dart';
+// import 'serializers.dart';
 
-abstract class Article implements Built<Article, ArticleBuilder> {
-  // Fields
-  int get id;
+// part 'json_parsing.g.dart';
 
-  Article._();
+// abstract class Article implements Built<Article, ArticleBuilder> {
+//   static Serializer<Article> get serializer => _$articleSerializer;
 
-  factory Article([void Function(ArticleBuilder) updates]) = _$Article;
-}
+//   // Fields
+//   @nullable
+//   int get id;
+//   @nullable
+//   bool get deleted;
+//   @nullable
+//   String get type;
+//   @nullable
+//   String get by;
+//   @nullable
+//   int get time;
+//   @nullable
+//   String get text;
+//   @nullable
+//   bool get dead;
+//   @nullable
+//   int get parent;
+//   @nullable
+//   int get poll;
+//   BuiltList<int> get kids;
+//   @nullable
+//   String get url;
+//   @nullable
+//   int get score;
+//   @nullable
+//   String get title;
+//   @nullable
+//   BuiltList<int> get parts;
+//   @nullable
+//   int get descendants;
+
+//   Article._();
+
+//   factory Article([void Function(ArticleBuilder) updates]) = _$Article;
+// }
 
 // class Article {
 //   final String text;
@@ -24,7 +59,7 @@ abstract class Article implements Built<Article, ArticleBuilder> {
 //   factory Article.fromJson(Map<String, dynamic> json){
 //     if(json == null)
 //       return null;
-    
+
 //     return Article(
 //       text: json['text'] ?? 'null',
 //       url: json['url'],
@@ -35,16 +70,14 @@ abstract class Article implements Built<Article, ArticleBuilder> {
 //   }
 // }
 
-List<int> parseTopStories(String json){
-  return [];
-  // final parsed = jsonDecode(json);
-  // final listOfIds = List<int>.from(parsed);
-  // return listOfIds;
+List<int> parseTopStories(String json) {
+  final parsed = jsonDecode(json);
+  final listOfIds = List<int>.from(parsed);
+  return listOfIds;
 }
 
-Article parseArticle(String json){
-  return null;
-  // final parsed = jsonDecode(json);
-  // Article article = Article.fromJson(parsed);
-  // return article;
+Article parseArticle(String jsonStr) {
+  final parsed = jsonDecode(jsonStr);
+  Article article = standardSerializers.deserializeWith(Article.serializer, parsed);
+  return article;
 }
