@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hn_app/json_parsing.dart';
 import 'package:hn_app/src/article.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
@@ -68,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 builder:
                     (BuildContext context, AsyncSnapshot<Article> snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
-                    return Text(snapshot.data.title);
+                    return _buildItem(snapshot.data);
                   } else {
                     return Center(
                       child: CircularProgressIndicator(
