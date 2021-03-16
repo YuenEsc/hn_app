@@ -70,6 +70,11 @@
 //   }
 // }
 
+import 'dart:convert';
+
+import 'package:hn_app/src/article.dart';
+import 'package:hn_app/src/serializers.dart';
+
 List<int> parseTopStories(String json) {
   final parsed = jsonDecode(json);
   final listOfIds = List<int>.from(parsed);

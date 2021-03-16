@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hn_app/json_parsing.dart';
 import 'package:hn_app/src/article.dart';
+import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
 void main() {
@@ -29,7 +31,28 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<Article> _articles = articles;
+  List<int> _ids = [
+    26466113,
+    26477144,
+    26470223,
+    26476555,
+    26477064,
+    26476685,
+    26476038,
+    26478189,
+    26473442,
+    26474331
+  ]; //articles;
+
+  Future<Article> _getArticle(int id) async {
+    print(id);
+    final storyUrl = Uri.https('hacker-news.firebaseio.com', '/v0/item/$id.json');
+    final storyRes = await http.get(storyUrl);
+    print(storyRes.statusCode);
+    if (storyRes.statusCode == 200) {
+      return parseArticle(storyRes.body);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,38 +60,47 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          await Future.delayed(const Duration(seconds: 1));
-          setState(() {
-            _articles.removeAt(0);
-          });
-          return;
-        },
-        child: ListView(
-          children: _articles.map(_buildItem).toList(),
-        ),
+      body: ListView(
+        children: _ids
+            .map(
+              (i) => FutureBuilder<Article>(
+                future: _getArticle(i),
+                builder:
+                    (BuildContext context, AsyncSnapshot<Article> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    return Text(snapshot.data.title);
+                  } else {
+                    return Center(
+                      child: CircularProgressIndicator(
+                        
+                      ),
+                    );
+                  }
+                },
+              ),
+            )
+            .toList(),
       ),
     );
   }
 
-  Widget _buildItem(Article a) {
+  Widget _buildItem(Article article) {
     return Padding(
-      key: Key(a.text),
+      key: Key(article.title),
       padding: const EdgeInsets.all(16.0),
       child: ExpansionTile(
         title: Text(
-          a.text,
+          article.title,
           style: TextStyle(fontSize: 24.0),
         ),
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Text("${a.commentsCount} comments"),
+              Text("${article.type}"),
               IconButton(
                   onPressed: () {
-                    _launchURL(a.domain);
+                    _launchURL(article.url);
                   },
                   icon: Icon(Icons.launch),
                   color: Theme.of(context).primaryColor)
