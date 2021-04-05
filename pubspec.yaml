@@ -33,6 +33,7 @@ dependencies:
   built_collection: ^5.0.0
   http: ^0.13.0
   rxdart: ^0.26.0
+  flutter_icons: ^1.1.0
 
 dev_dependencies:
   flutter_test:
